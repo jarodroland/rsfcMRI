@@ -1,6 +1,6 @@
 # rsfcMRI
 
-These are a collection of matlab scripts created for data processing of 4dfp images and resting state function connectivity anslysis.<br>
+These are a collection of matlab scripts created for processing 4dfp images and resting state functional connectivity analysis.<br>
 
 Jarod L Roland, MD<br>
 Department of Neurosurgery<br>
