@@ -8,19 +8,19 @@ function figHandle = PlotMontageOverlay(anatData, funcData, varargin)
 %   Format for anatData and functData is the same as returned from my Read4dfp() function, 
 %   which is a 3D matrix [x, y, z] of intensity values.
 %   The figure handle is returned.
-%   Due to the way the overlay is added ontop of the anatomic image, the colormap must be 
+%   Due to the way the overlay is added on top of the anatomic image, the colormap must be 
 %   set via parameters to the function. Trying to adjust the colormap with the returned 
 %   figure handle will not work.
 %
 % Usage:
 %   >> figMontage = PlotMontageOverlay(anatData, funcData);
-%   >> figMeanPartialPost = PlotMontageOverlay(atlasData, meanHomoPartialPost, 'funcColorMap', newCMap, 'inMin', -totMax, 'inMax', totMax, 'cBarMin', -totMax, 'cBarMax', totMax, 'funcThreshold', 0.0, 'isKeepNegative', true, 'alphaOverlay', alpha, 'isShowColormap', true, 'sliceList', [9, 20, 24, 39], 'layout', [2 2]);
+%   >> figMeanPartialPost = PlotMontageOverlay(atlasData, meanPartialPost, 'funcColorMap', newCMap, 'inMin', -totMax, 'inMax', totMax, 'cBarMin', -totMax, 'cBarMax', totMax, 'funcThreshold', 0.0, 'isKeepNegative', true, 'alphaOverlay', alpha, 'isShowColormap', true, 'sliceList', [9, 20, 24, 39], 'layout', [2 2]);
 %
 % Output:
 %   figHandle - figure handle of the created image
 %   
 % Required Parameters:
-%   anatData - The anatomic image to serves as underlay
+%   anatData - The anatomic image to serve as underlay
 %   funcData - The functional data to be overlaid on the anatomic image (must be same size as anatData)
 %
 % Optional Parameters:
@@ -42,12 +42,12 @@ function figHandle = PlotMontageOverlay(anatData, funcData, varargin)
 % Author:
 %   Jarod L Roland
 %   Department of Neurosurgery
-%   Washington University in St. Louis
+%   Washington University School of Medicine in St. Louis
 %
 params = inputParser;
 addRequired(params, 'anatData', @(x) true);
 addRequired(params, 'funcData', @(x) true);
-addParameter(params, 'layout', [4 12], @(x) (size(x, 1) == 1) & (size(x, 2) == 2));
+addParameter(params, 'layout', [4 12], @(x) (size(x, 1) == 1) & (size(x, 2) == 2)); % use [11 16] for 111 space
 addParameter(params, 'funcColorMap', 'jet', @(x) true);
 addParameter(params, 'inMin', min(min(min(funcData))), @isnumeric);
 addParameter(params, 'inMax', max(max(max(funcData))), @isnumeric);
@@ -106,18 +106,6 @@ funcMask = logical(funcData);
 
 cMap = colormap(funcColorMap);
 % symmetricCBar = true;
-
-% % color bar used in the CC homotopic connectivity plots
-% totMax = 1.2;
-% colorMax = 0.5;
-% colorStepSize = (colorMax * 2) / length(cMap);
-% colorNumStep = round(totMax / colorStepSize);
-% newCMap = zeros(colorNumStep * 2, 3);
-% midCMap = round(length(cMap)/2);
-% newCMap(1:(colorNumStep - midCMap), :) = repmat(cMap(1, :), (colorNumStep - midCMap), 1);
-% newCMap((colorNumStep - midCMap + 1):colorNumStep, :) = cMap(1:midCMap, :);
-% newCMap(colorNumStep+1:(colorNumStep + midCMap), :) = cMap(midCMap+1:end, :);
-% newCMap((colorNumStep + midCMap + 1):end, :) = repmat(cMap(end, :), ((colorNumStep * 2) - (colorNumStep + midCMap)), 1);
 
 funcData = TransformImageForMontage(funcData, 'isScale', true, 'inMin', inMin, 'inMax', inMax, 'outMin', 1, 'outMax', length(cMap));
 % funcData = TransformImageForMontage(funcData, 'isScale', true, 'inMin', -totMax, 'inMax', totMax, 'outMin', 2, 'outMax', length(cMap)-1);     % used for Homotopic maps

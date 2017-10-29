@@ -10,19 +10,19 @@ function imageData = Read4dfp(filename, varargin)
 %   >> imageData = Read4dfp('C:\path\to\subject_mpr.4dfp.img');
 %   
 % Output:
-%   imageData - 3D matrix in the form [x, y, z] => [medial/lateral, anterior/posterior, dorsal/ventral]
+%   imageData - 3D matrix in the form [x, y, z] => [medial/lateral, anterior/posterior, dorsal/ventral] for a typical axial image
 %   
 % Required Parameters:
 %   filename - The path to either the 4dfp.img or 4dfp.ifh file. The counterpart must be in the same directory.
 %   
 % Optional Parameters:
 %   [littleendian|bigendian] - text string forcing endian byte order of data. 
-%     If not passed it is read from the IFH (if not specified in IFH an error results).
+%     If not passed, it is read from the IFH file (an error results if not specified in IFH).
 %   
 % Author:
 %   Jarod L Roland
 %   Department of Neurosurgery
-%   Washington University in St. Louis
+%   Washington University School of Medicine in St. Louis
 %
 imageData = [];
 
@@ -76,14 +76,17 @@ for i = 1:numTokens
 end
 ifhMap = containers.Map(key, val);
 
-% find endian byte order if it hasn't been specified via function parameter
+% find endian byte order if it hasn't been specified as a function parameter
 if(isempty(endianType))
-    if(strcmp(ifhMap('imagedata byte order'), 'littleendian'))
+    byteOrderKey = 'imagedata byte order';
+    assert( ~isempty(find(not(cellfun('isempty', strfind(key, byteOrderKey))), 1)) , 'Could not find byte order in header file. Often these are bigendian when not specified in the header file. Please indicate byte order (littleendian|bigendia) as a parameter to Read4dfp.' );
+
+    if(strcmp(ifhMap(byteOrderKey), 'littleendian'))
         endianType = 'ieee-le';
-    elseif(strcmp(ifhMap('imagedata byte order'), 'bigendian'))
+    elseif(strcmp(ifhMap(byteOrderKey), 'bigendian'))
         endianType = 'ieee-be';
     else
-        error(['Unknown endian type: ''' ifhMap('imagedata byte order') '''']);
+        error(['Unknown endian type: ''' ifhMap(byteOrderKey) '''']);
     end
 end
 
