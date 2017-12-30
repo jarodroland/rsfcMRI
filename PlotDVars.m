@@ -3,7 +3,7 @@ function figDvarsComplete = PlotDVars(studyPath)
 % 
 % Description:
 %   Plots the DVars from the .vals file.
-%   If a directory is passed in then it is searhced for a singled .vals file, or for an FCmaps directory containing a single .vals file.
+%   If a directory is passed, then it is searhced for a single .vals file, or for an FCmaps directory containing a single .vals file.
 %   
 % Usage:
 %   >> PlotDVars('C:\path\to\subj001\FCmaps\subj001_session_faln_dbnd_xr3d_atl_g7_bpss_resid.vals');
@@ -14,7 +14,7 @@ function figDvarsComplete = PlotDVars(studyPath)
 %   figDvarsComplete - figure handle
 %   
 % Required Parameters:
-%   filename - The path to either the .vals file, the directory containing a single .vals file (e.g. FCmaps), or the subject directory containing the FCmaps files
+%   filename - The path to either a .vals file, the directory containing a single .vals file (e.g. FCmaps), or the subject/study directory containing the FCmaps files.
 %   
 % Optional Parameters:
 %   none 
@@ -25,8 +25,24 @@ function figDvarsComplete = PlotDVars(studyPath)
 %   Washington University School of Medicine in St. Louis
 %
 
+%% Parse params
+if(exist(studyPath, 'file') == 2)
+    assert(strcmp(studyPath(end-4:end), '.vals'), 'Error: File must end in .vals');
+    filename = studyPath;
+elseif(exist(studyPath, 'dir') == 7)
+    dirSearch = dir([studyPath '/*.vals']);
+    if(isempty(dirSearch) && exist([studyPath '/FCmaps'], 'dir') == 7)
+        studyPath = [studyPath '/FCmaps'];
+        dirSearch = dir([studyPath '/*.vals']);
+    end
+    
+    filename = [studyPath '/' dirSearch(1).name];
+    if(length(dirSearch) > 1)
+        warning(['Error: Multiple .vals files found, using the first one: ' filename]);
+    end 
+end
+
 %% Load DVars
-filename = studyPath;
 hFileDvar = fopen(filename);
 assert(hFileDvar > 0, ['Error: Failed to open file: ' filename]);
 dvars = textscan(hFileDvar, '');
