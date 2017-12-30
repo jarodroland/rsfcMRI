@@ -57,7 +57,8 @@ plot(dvars', 'color', [0.4 0.4 0.4]);
 ylim(dvarsLims);
 hold on
 plot([0 numFrames], [5 5], 'k', 'linewidth', 0.5);
-title(['DVars']);
+[~, file, ext] = fileparts(filename);
+title([file ext], 'Interpreter', 'none');
 ax = figDvarsComplete.CurrentAxes;
 ax.XLim = [0 numFrames];
 ax.YTick = [0 5 10:10:50];
