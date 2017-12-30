@@ -38,7 +38,7 @@ elseif(exist(studyPath, 'dir') == 7)
     
     filename = [studyPath '/' dirSearch(1).name];
     if(length(dirSearch) > 1)
-        warning(['Error: Multiple .vals files found, using the first one: ' filename]);
+        warning(['Warning: Multiple .vals files found, using the first one: ' filename]);
     end 
 end
 
