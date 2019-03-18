@@ -30,7 +30,7 @@ function zfrmWholeMask = HomotopicCorrelation(inDir, patid, varargin)
 params = inputParser;
 addRequired(params, 'inDir', @(x) (exist(x, 'dir') == 7));
 addRequired(params, 'patid', @(x) true);
-addParameter(params, 'fcDir', 'FCmapsHacker2013_noGSR', @(x) (exist(fullfile(inDir, x), 'dir') == 7));
+addParameter(params, 'fcDir', 'FCmaps', @(x) (exist(fullfile(inDir, x), 'dir') == 7)); %fcDir is only used for the vals and dfndm, not for voxel data
 addParameter(params, 'isPlotFig', false, @islogical);
 addParameter(params, 'cBarMax', 1.2, @isnumeric);
 parse(params, inDir, patid, varargin{:});
@@ -44,8 +44,6 @@ cBarMax = params.Results.cBarMax;
 
 
 %% Data defs
-% outDir = [getenv('USERPROFILE') '\Dropbox\Research\Peds fcMRI in Epilepsy\Figures\HomotopicSeedMaps\'];
-% fcDir = 'FCmapsHacker2013_noGSR';%      %NOTE: fcDir is only used for the vals and dfndm file, not for voxel data  %TODO: make an optional function param
 dvarLimit = 5.0;     % movement scrubbing threshold (ref: Power et al 2011)
 
 % paths to data files
@@ -92,11 +90,9 @@ numGoodFrames = size(brsCatDataScrubbed, 4);
 
 %% Voxel Mirrored Homotopic Connectivity (VMHC)
 % corelattion between signal from right & left homotopic voxel pairs
-% rightHemi = goodFrames(:, 1:floor(sizeX/2), :, :);
-% leftHemi = flip( goodFrames(:, floor(sizeX/2)+1:end, :, :), 2 );
 % brsCatDataScrubbed(24:25, :, :, :) = 0;
-rightHemi = brsCatDataScrubbed(1:imgSpace(1) / 2, :, :, :);
-leftHemi = flip( brsCatDataScrubbed(imgSpace(1) / 2 + 1:imgSpace(1), :, :, :), 1 );
+rightHemi = brsCatDataScrubbed(1:floor(sizeX / 2), :, :, :);
+leftHemi = flip( brsCatDataScrubbed(floor(sizeX / 2) + 1:end, :, :, :), 1 );
 assert(size(rightHemi, 1) == size(leftHemi, 1), 'Error: Unequal size hemispheres');
 
 numVox = size(rightHemi, 1) * size(rightHemi, 2) * size(rightHemi, 3);
@@ -120,7 +116,6 @@ if(isPlotFig)
     mprData = Read4dfp(mprFilename);
 
     % create a color bar with Jet in the middle and plateua at +/- colorMax
-%     cBarMax = 1.2;
     colorMax = 0.5;
     cMap = jet(64);         % start from jet colormap and modify (default colormap is 64 long)
     colorStepSize = (colorMax * 2) / length(cMap);
@@ -133,7 +128,7 @@ if(isPlotFig)
     newCMap((colorNumStep + midCMap + 1):end, :) = repmat(cMap(end, :), ((colorNumStep * 2) - (colorNumStep + midCMap)), 1);
 
     % plot montage
-    figVMHC = PlotMontageOverlay(mprData, zfrmWholeMask, 'funcColorMap', newCMap, 'inMin', -cBarMax, 'inMax', cBarMax, 'cBarMin', -cBarMax, 'cBarMax', cBarMax, 'funcThreshold', 0.0, 'isKeepNegative', true, 'isShowColormap', true);
+    PlotMontageOverlay(mprData, zfrmWholeMask, 'funcColorMap', newCMap, 'inMin', -cBarMax, 'inMax', cBarMax, 'cBarMin', -cBarMax, 'cBarMax', cBarMax, 'funcThreshold', 0.0, 'isKeepNegative', true, 'isShowColormap', true);
 
     % beautify figure
     title(strrep(patid, '_', '\_'))
