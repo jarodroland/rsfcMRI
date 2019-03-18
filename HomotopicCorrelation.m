@@ -19,6 +19,7 @@ function zfrmWholeMask = HomotopicCorrelation(inDir, patid, varargin)
 %   fcDir - Directory within inDir of the Functional Connectivity data output from 4dfp suite (e.g. 'FCdir')
 %   isPlotFig - Boolean flag for figure plotting
 %   cBarMax - Value for +/- max vmhc value (Fisher Z) of color bar in figure
+%   underlayPath - Path to the image on which the VMHC data will be plottet (defaults to the first Patid_mpr1_*_333.img in atlas folder)
 % 
 %   
 % Author:
@@ -33,6 +34,7 @@ addRequired(params, 'patid', @(x) true);
 addParameter(params, 'fcDir', 'FCmaps', @(x) (exist(fullfile(inDir, x), 'dir') == 7)); %fcDir is only used for the vals and dfndm, not for voxel data
 addParameter(params, 'isPlotFig', false, @islogical);
 addParameter(params, 'cBarMax', 1.2, @isnumeric);
+addParameter(params, 'underlayPath', ls(fullfile(inDir, 'atlas', [patid '_mpr1_*_333.4dfp.img'])), @(x) (exist(fullfile(inDir, 'atlas', x), 'dir') == 7));
 parse(params, inDir, patid, varargin{:});
 
 % set variables
@@ -41,13 +43,21 @@ patid = params.Results.patid;
 fcDir = params.Results.fcDir;
 isPlotFig = params.Results.isPlotFig;
 cBarMax = params.Results.cBarMax;
+underlayPath = params.Results.underlayPath;
+
+% check if the default underlayPath search returned more than one file
+if(isunix)
+    underlayPath = strsplit(underlayPath);
+    underlayPath = underlayPath{1};
+else
+    underlayPath = underlayPath(1, :);      % windows returns (numFiles, length)
+end
 
 
 %% Data defs
 dvarLimit = 5.0;     % movement scrubbing threshold (ref: Power et al 2011)
 
 % paths to data files
-mprFilename     = fullfile(inDir, 'atlas', [patid '_mpr1_on_pre_CC_t2w_333.4dfp.img']);
 brs1Filename    = fullfile(inDir, 'boldrs1', [patid '_brs1_faln_dbnd_xr3d_atl_g7_bpss_resid.4dfp.img']);
 brs2Filename    = fullfile(inDir, 'boldrs2', [patid '_brs2_faln_dbnd_xr3d_atl_g7_bpss_resid.4dfp.img']);
 % formatFilename  = fullfile(fcDir, [patid '_faln_dbnd_xr3d_atl_g7_bpss_resid.format']);
@@ -113,7 +123,7 @@ zfrmWholeMask = atanh(corrCoefWholeMask);
 
 %% Plot
 if(isPlotFig)
-    mprData = Read4dfp(mprFilename);
+    mprData = Read4dfp(underlayPath);
 
     % create a color bar with Jet in the middle and plateua at +/- colorMax
     colorMax = 0.5;
