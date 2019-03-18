@@ -8,7 +8,7 @@ function figHandle = PlotMontageOverlay(anatData, funcData, varargin)
 %   Format for anatData and functData is the same as returned from my Read4dfp() function, 
 %   which is a 3D matrix [x, y, z] of intensity values.
 %   The figure handle is returned.
-%   Due to the way the overlay is added on top of the anatomic image, the colormap must be 
+%   Due to the way the overlay is added on top of the anato2mic image, the colormap must be 
 %   set via parameters to the function. Trying to adjust the colormap with the returned 
 %   figure handle will not work.
 %
