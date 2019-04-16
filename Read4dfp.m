@@ -7,7 +7,6 @@ function imageData = Read4dfp(filename, varargin)
 %   
 % Usage:
 %   >> imageData = Read4dfp('C:\path\to\subject_mpr.4dfp.img');
-%   >> imageData = Read4dfp('C:\path\to\subject_mpr.4dfp.img');
 %   
 % Output:
 %   imageData - 3D matrix in the form [x, y, z] => [medial/lateral, anterior/posterior, dorsal/ventral] for a typical axial image
